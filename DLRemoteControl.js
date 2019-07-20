@@ -132,7 +132,7 @@ var DLRemoteControl = DLRemoteControl || (function () {
                 if (parm.startsWith('gi')) page.set({lightglobalillum: (parm == 'gi_on' ? true : false)});
                 if (parm.startsWith('rm')) page.set({lightrestrictmove: (parm == 'rm_on' ? true : false)});
             });
-            commandShow();
+            commandShow(msg);
         } else {
             sendChat('DLRemoteControl', '/w GM ERROR: no parameters given to set.', null, {noarchive:true});
         }
