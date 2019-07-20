@@ -4,8 +4,8 @@ This [Roll20](http://roll20.net/) script provides a "remote control" for changin
 
 ## Use
 
-Simply send `!remote` in chat to display the Remote. Grey buttons show a feature that is currently off, while a red one shows the feature is on. To save the current settings as a preset, click the "Save Settings as Preset" link below the buttons and enter a name for your preset in the pop up.
+Simply send `!remote` in chat to display the Remote indicating the current Dynamic Lighting settings for the page. Grey buttons show a feature that is currently off, while a red one shows the feature is on. To save the current settings as a preset, click the "Save Settings as Preset" link below the buttons and enter a name for your preset in the pop up.
 
 Presets are displayed below the "Save Settings" link along with a "↺" icon for renaming the preset and an "X" for deleting the preset.
 
-Note: DLRemoteControl only works for the page on which the players ribbon is located.
+You must have a graphic selected on the page you are currently working on, or DLRemoteControl will default to the page on which the players ribbon is located.

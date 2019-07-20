@@ -12,12 +12,12 @@ var DLRemoteControl = DLRemoteControl || (function () {
 
     //---- INFO ----//
 
-    var version = '0.1',
+    var version = '0.2',
         debugMode = false,
         styles = {
             img: 'https://s3-us-west-1.amazonaws.com/roll20.images/power-icon-white.png',
             box:  'background-color: #fff; border: 2px solid #000; padding: 8px 16px; border-radius: 18px; margin-left: -35px; margin-right: 5px;',
-            title: 'padding: 0 0 10px 0; font-size: 1.5em; font-weight: bold; font-variant: small-caps;', //' color: ##591209; font-family: "Times New Roman",Times,serif;',
+            title: 'padding: 0 0 10px 0; font-size: 1.5em; font-weight: bold; font-variant: small-caps; color: ##591209;',
             sub: 'font-variant: small-caps;', on: 'background-color: #aa1616;', off: 'background-color: #545454;',
             bigButton: 'border: 2px solid #000; border-radius: 5px; padding: 0; margin-bottom: 6px;',
             smallButton: 'border: 2px solid #000; border-radius: 3px;padding: 4px; margin: 0 8px 2px 0;',
@@ -32,7 +32,7 @@ var DLRemoteControl = DLRemoteControl || (function () {
         log('--> DLRemoteControl v' + version + ' <-- Initialized');
 		if (debugMode) {
             var d = new Date();
-            sendChat('Debug Mode', '/w GM DLRemoteControl loaded. at ' + d.toLocaleTimeString(), null, {noarchive:true});
+            sendChat('Debug Mode', '/w GM DLRemoteControl v' + version + ' loaded at ' + d.toLocaleTimeString(), null, {noarchive:true});
         }
     },
 
@@ -46,10 +46,10 @@ var DLRemoteControl = DLRemoteControl || (function () {
                 if (parms[1]) {
                     switch (parms[1]) {
                         case '--set':
-                        commandSet(msg.content);
+                        commandSet(msg);
                         break;
                         case '--save':
-                        commandSave(msg.content);
+                        commandSave(msg);
                         break;
                         case '--delete':
                         commandDelete(msg.content);
@@ -58,23 +58,24 @@ var DLRemoteControl = DLRemoteControl || (function () {
                         commandRename(msg.content);
                         break;
                         default:
-                        commandShow();
+                        commandShow(msg);
                     }
-                } else commandShow();
+                } else commandShow(msg);
             }
 		}
     },
 
-    commandShow = function () {
+    commandShow = function (msg) {
 		// Show "remote" in chat with current Dynamic Lighting settings
-		var rText = '', page = getObj("page", Campaign().get("playerpageid"));
+		var rText = '', page = getObj("page", getPageID(msg));
         var dLighting = page.get('showlighting'),
         upOnDrop = page.get('lightupdatedrop'),
         enforceLoS = page.get('lightenforcelos'),
         globIllum = page.get('lightglobalillum'),
         restrMove = page.get('lightrestrictmove');
 
-        rText += '<div style=\'' + styles.wrapper + styles.sub + '\'>-=[ Dynamic Lighting Remote ]=-</div><div style=\'' + styles.wrapper + '\'>';
+        rText += '<div style=\'' + styles.wrapper + styles.sub + '\'>-=[ Dynamic Lighting Remote ]=-</div>';
+        rText += '<div style=\'' + styles.wrapper + styles.title + '\'>&ldquo;' + page.get('name') + '&rdquo;</div><div style=\'' + styles.wrapper + '\'>';
         if (dLighting) rText += '<a style=\'' + styles.bigButton + styles.on + '\' href="!remote --set dl_off" title="Turn Dynamic Lighting Off">';
         else  rText += '<a style=\'' + styles.bigButton + styles.off + '\' href="!remote --set dl_on" title="Turn Dynamic Lighting On">';
         rText += '<img src="' + styles.img + '" width="34px" height="34px" /></a></div><table>';
@@ -119,8 +120,8 @@ var DLRemoteControl = DLRemoteControl || (function () {
 
     commandSet = function (msg) {
         // Set Dynamic Lighting according to given variables
-        var parms = msg.replace(/\!remote\s+\-\-set\s+/g, '').split(','),
-        page = getObj("page", Campaign().get("playerpageid"));
+        var parms = msg.content.replace(/\!remote\s+\-\-set\s+/g, '').split(','),
+        page = getObj("page", getPageID(msg));
 
         if (parms) {
             _.each(parms, function (parm) {
@@ -139,9 +140,9 @@ var DLRemoteControl = DLRemoteControl || (function () {
 
     commandSave = function (msg) {
         // Save current Dynamic Lighting settings as a preset
-        var name = msg.replace(/\!remote\s+\-\-save/g, '').trim();
+        var name = msg.content.replace(/\!remote\s+\-\-save/g, '').trim();
         if (name.length > 0) {
-            var settings = [], preset = {name: name, settings: []}, page = getObj("page", Campaign().get("playerpageid"));
+            var settings = [], preset = {name: name, settings: []}, page = getObj("page", getPageID(msg));
             var dLighting = (page.get('showlighting')) ? 'dl_on' : 'dl_off',
             upOnDrop = (page.get('lightupdatedrop')) ? 'ud_on' : 'ud_off',
             enforceLoS = (page.get('lightenforcelos')) ? 'ls_on' : 'ls_off',
@@ -194,6 +195,16 @@ var DLRemoteControl = DLRemoteControl || (function () {
         var body = '<div style=\'' + styles.box + '\'>' + title + '<div>' + content + '</div></div>';
         sendChat('DLRemoteControl','/w GM ' + body, null, {noarchive:true});
 	},
+
+    getPageID = function (msg) {
+        // Returns the pageID of the working page
+        var pageID = Campaign().get("playerpageid");
+        if (msg.selected) {
+            var token = getObj(msg.selected[0]._type, msg.selected[0]._id);
+            if (token) pageID = token.get('pageid');
+        }
+        return pageID;
+    },
 
     //---- PUBLIC FUNCTIONS ----//
 
