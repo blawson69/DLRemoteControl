@@ -159,7 +159,7 @@ var DLRemoteControl = DLRemoteControl || (function () {
             sendChat('DLRemoteControl', '/w GM ERROR: no parameters given to save.', null, {noarchive:true});
         }
 
-        commandShow();
+        commandShow(msg);
     },
 
     commandDelete = function(msg) {
@@ -171,7 +171,7 @@ var DLRemoteControl = DLRemoteControl || (function () {
         } else {
             sendChat('DLRemoteControl', '/w GM ERROR: no parameters given to delete.', null, {noarchive:true});
         }
-        commandShow();
+        commandShow(msg);
     },
 
     commandRename = function (msg) {
@@ -187,7 +187,7 @@ var DLRemoteControl = DLRemoteControl || (function () {
         } else {
             sendChat('DLRemoteControl', '/w GM ERROR: not enough parameters given to rename.', null, {noarchive:true});
         }
-        commandShow();
+        commandShow(msg);
     },
 
 	showRemote = function (title, content) {
